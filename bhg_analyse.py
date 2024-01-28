@@ -19,25 +19,25 @@ gdf.set_crs(epsg=4326, inplace=True)
 
 
 df['voksentetthet'] = df['Ant_ansatte']/df['Ant_barn']
+ref_point_lon = '9.6929923'
+ref_point_lat = '62.5931427'
 
-# Create a map object centered around an average location
-map_center = [df['UTM_Y'].mean(), df['UTM_X'].mean()]
-mymap = folium.Map(location=map_center, zoom_start=12)
+ref_point = Point(ref_point_lon, ref_point_lat)
 
-# Add markers to the map
-for idx, row in df.iterrows():
-    folium.Circle(
-        location=[row['UTM_Y'], row['UTM_X']],
-        radius = row['Ant_barn']*5,
-            color = 'blue',
-            fill_color = 'blue',
-            fill = True,          
-        popup=f"{row['Barnehage']}<br>Kids: {row['Ant_barn']}<br>Employees: {row['Ant_ansatte']}"
-    ).add_to(mymap)
+gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.UTM_X, df.UTM_Y))
 
-# Display the map
-mymap
+# Set CRS to WGS84 (if it's not already)
+gdf = gdf.set_crs(epsg=4326)
 
+# Find a suitable UTM zone CRS for your region and reproject
+gdf = gdf.to_crs(epsg=32632)
+ref_point = gpd.GeoSeries([ref_point], crs=4326).to_crs(epsg=32632)[0]
+
+df['AvstandJernbane'] = gdf['geometry'].distance(ref_point)
+
+
+
+# farger for å visualisere voksentetthet
 def get_color(ratio):
     if ratio > 0.245:
         return 'green'
@@ -63,22 +63,6 @@ for idx, row in df.iterrows():
 # Display the map
 mymap
 
-ref_point_lon = '9.6929923'
-ref_point_lat = '62.5931427'
-
-ref_point = Point(ref_point_lon, ref_point_lat)
-
-gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.UTM_X, df.UTM_Y))
-
-# Set CRS to WGS84 (if it's not already)
-gdf = gdf.set_crs(epsg=4326)
-
-# Find a suitable UTM zone CRS for your region and reproject
-gdf = gdf.to_crs(epsg=32632)
-ref_point = gpd.GeoSeries([ref_point], crs=4326).to_crs(epsg=32632)[0]
-
-
-df['AvstandJernbane'] = gdf['geometry'].distance(ref_point)
 
 st.title('Kartanalyse barnehager')
 folium_static(mymap)
