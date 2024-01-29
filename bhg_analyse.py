@@ -55,7 +55,7 @@ mymap = folium.Map(location=map_center, zoom_start=12)
 for idx, row in df.iterrows():
     folium.Circle(
         location=[row['UTM_Y'], row['UTM_X']],
-        popup=f"{row['Barnehage']}<br>Barn: {row['Ant_barn']}<br>Ansatte: {row['Ant_ansatte']} <br>Avstand jernbane:{row['Avstand']} <br>Voksentetthet: {row['voksentetthet']:.2f}",
+        popup=f"{row['Barnehage']}<br>Barn: {row['Ant_barn']}<br>Ansatte: {row['Ant_ansatte']} <br>Avstand jernbane:{row['AvstandJernbane']} <br>Voksentetthet: {row['voksentetthet']:.2f}",
         radius=row['Ant_barn'] * 10,  # Adjust as necessary
         color=get_color(row['voksentetthet']),
         fill=True,
