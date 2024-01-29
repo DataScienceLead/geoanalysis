@@ -1,16 +1,18 @@
 import pandas as pd
 import geopandas as gpd
 
-from shapely.geometry import Point
 
+from shapely.geometry import Point
 import streamlit as st
 import folium
-from streamlit_folium import folium_static
+# from streamlit_folium import folium_static
+from streamlit_folium import st_folium
+
 
 df = pd.read_excel('data.xlsx')
 
 # Convert UTM coordinates to Point geometry
-df['geometry'] = [Point(xy) for xy in zip(df.UTM_X, df.UTM_Y)]
+df['geometry'] = [Point(xy) for xy in zip(df.UTM_Y, df.UTM_X)]
 # gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
 
 # Create a GeoDataFrame
@@ -53,7 +55,7 @@ mymap = folium.Map(location=map_center, zoom_start=12)
 for idx, row in df.iterrows():
     folium.Circle(
         location=[row['UTM_Y'], row['UTM_X']],
-        popup=f"{row['Barnehage']}<br>Barn: {row['Ant_barn']}<br>Ansatte: {row['Ant_ansatte']}<br>Voksentetthet: {row['voksentetthet']:.2f}",
+        popup=f"{row['Barnehage']}<br>Barn: {row['Ant_barn']}<br>Ansatte: {row['Ant_ansatte']} <br>Avstand jernbane:{row['Avstand']} <br>Voksentetthet: {row['voksentetthet']:.2f}",
         radius=row['Ant_barn'] * 10,  # Adjust as necessary
         color=get_color(row['voksentetthet']),
         fill=True,
@@ -61,10 +63,16 @@ for idx, row in df.iterrows():
     ).add_to(mymap)
 
 # Display the map
-mymap
+# mymap
 
 
 st.title('Kartanalyse barnehager')
-folium_static(mymap)
+# folium_static(mymap)
+st_data = st_folium(mymap)
+# st_folium(mymap, width=375)
+
+# st.write(mymap)
+# st.write("## session_state")
+# st.write(st.session_state)
 
 
