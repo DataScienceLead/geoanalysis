@@ -66,7 +66,7 @@ for idx, row in df.iterrows():
 # mymap
 
 
-st.title('Kartanalyse barnehager')
+st.title('Et eksempel: En analyse av barnehagestruktur i Oppdal kommunne')
 # folium_static(mymap)
 st_data = st_folium(mymap)
 # st_folium(mymap, width=375)
@@ -74,5 +74,4 @@ st_data = st_folium(mymap)
 # st.write(mymap)
 # st.write("## session_state")
 # st.write(st.session_state)
-
 
